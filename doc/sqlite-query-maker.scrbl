@@ -3,11 +3,9 @@
 @(require scribble/eval
           (for-label "../lib/sqlite-query-maker.rkt"))
 
-@title{A basic data management library}
-
 @defmodule[lib/sqlite-query-maker]
 
-@section[#:tag "queries"]{Automating SQLite queries}
+@title[#:tag "queries"]{Automating SQLite queries}
 
 The library has a few functions that can be handy for creating strings describing some typical queries
 in the SQLite language.

@@ -1,6 +1,7 @@
-#lang racket
+#lang racket/base
 
-(require srfi/13)
+(require srfi/13
+         racket/format)
 
 (provide make-table)
 (provide insert-row)

@@ -1,7 +1,7 @@
-#lang racket
+#lang racket/base
 
 (require db)
-(require "lib/sqlite-query-maker.rkt")
+(require "../lib/sqlite-query-maker.rkt")
 
 (define dbname "test.db")
 (define tablename "mytable")
@@ -10,7 +10,7 @@
                (age . real)))
 
 (define db
-  (sqlite3-connect #:database "test.db"
+  (sqlite3-connect #:database dbname
                    #:mode 'create))
 
 (query-exec db
@@ -44,4 +44,6 @@
 (query-exec db (update-row tablename vals new-vals))
 (display (update-row tablename vals new-vals))
 (newline)
+
+(delete-file dbname)
 
