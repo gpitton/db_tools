@@ -33,28 +33,42 @@ key-value format, as in the following example.
 To parse files like this, this library provides the function @tt{read-keyvalue-file}.
 
 @defproc[(read-keyvalue-file [filename string?]
-                             [#:mode mode-flag (or/c 'binary 'text) 'text])
-         (stream?)]{
+                             [#:mode mode-flag (or/c 'binary 'text) 'text]
+                             [#:keys keys-flag (or/c 'all list?) 'all])
+         (listof hash?)]{
 It is not necessary that a file has exactly the same fields for every data point. Also, blank lines
 between each data point are not necessary.
-This function will keep reading the file @filepath{filename}, progressively building a hash map,
-until one of the keys in the file is already seen in the current hash. At this stage, it will return
-the last complete hash map and wait for the next call to @tt{stream-first}.
+This function will read all the lines in the file and return a list of hash maps for all the entries
+in the key-value file.
+If only a subset of the keys are of interest, these can be specified with the keyword @tt{#:keys},
+which takes a list of strings or a list of symbols.
+
 
 @racketblock[
   (define data (read-keyvalue-file "data.txt"))
-  (for/list ((d data))
-  (for (((key value) (in-hash d)))
-    (printf "Key: ~a --- Value: ~a\n" key value)))
+  (for* ((d data)
+        ((key value) (in-hash d)))
+    (printf "Key: ~a --- Value: ~a\n" key value))
 ]
 @verbatim|{
 Key: OS --- Value:  GNU
 Key: BatteryLevel --- Value:  85
-Key: OS --- Value:  FreeBSD
 Key: UserID --- Value:  65542
+Key: OS --- Value:  FreeBSD
 Key: BatteryLevel --- Value:  15
-Key: User --- Value:  256413
-'(#<void> #<void>)
+Key: UserID --- Value:  256413
+}|
+
+Example where we want to read only one key from the file.
+@racketblock[
+  (define data (read-keyvalue-file "data.txt" #:keys '(UserID)))
+  (for* ((d data)
+        ((key value) (in-hash d)))
+    (printf "Key: ~a --- Value: ~a\n" key value))
+]
+@verbatim|{
+Key: UserID --- Value:  65542
+Key: UserID --- Value:  256413
 }|
 
 }
