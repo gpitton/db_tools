@@ -1,11 +1,10 @@
-#lang racket/base
+#lang racket
 
-(require srfi/13
-         racket/format)
+(require srfi/13)
 
 (provide make-table)
-(provide insert-row)
 (provide insert-col)
+(provide insert-row)
 (provide update-row)
 
 
@@ -33,7 +32,8 @@
          (else (string-append "\"" val "\""))))
 
 
-(define (make-table name cols)
+(define/contract (make-table name cols)
+  (-> (or/c symbol? string?) (listof pair?) string?)
   ;; Returns a query for creating a new table with name "name"
   ;; with columns and column types expressed as a list of pairs
   ;; in "cols". Example: '((name . string) (age . integer) ... (weight . real))
@@ -48,7 +48,8 @@
     (A query col-names col-types)))
 
 
-(define (insert-col tabname cols)
+(define/contract (insert-col tabname cols)
+  (-> (or/c symbol? string?) (listof pair?) (listof string?))
   ;; Returns a list of sqlite queries (each expressed as a string) that inserts new
   ;; columns in the table tabname. cols is a list of name-type pairs.
   ;; Example: cols = '((name . text) ... (weight . real))
@@ -65,7 +66,8 @@
     (A query col-names col-types)))
 
 
-(define (insert-row name vals)
+(define/contract (insert-row name vals)
+  (-> (or/c symbol? string?) (listof pair?) string?)
   ;; name is the table name, vals is a list of pairs
   ;; in the form: '((colname-1 . val-1) ... (colname-n . val-n))
   ;; the values are assumed to be already of the appropriate type
@@ -87,7 +89,8 @@
     (A query col-names col-values)))
            
 
-(define (update-row name where vals)
+(define/contract (update-row name where vals)
+  (-> (or/c symbol? string?) (listof pair?) (listof pair?) string?)
   ;; updates table "name" with the values "vals" in the row determined by
   ;; "where". Both "where" and "vals" should be list of pairs with the
   ;; following structure:

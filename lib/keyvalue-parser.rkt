@@ -1,11 +1,11 @@
-#lang racket/base
+#lang racket
 
 
-(require racket/format
-         racket/sequence
-         racket/stream
-         racket/string)
-(provide read-keyvalue-file)
+(provide (contract-out
+          (read-keyvalue-file (->* (string?)
+                                   (#:mode (or/c 'binary 'text)
+                                    #:keys (or/c 'all list?))
+                                   (listof hash?)))))
 
 
 (define (read-keyvalue-file filename #:mode [mode 'text] #:keys [keys 'all])

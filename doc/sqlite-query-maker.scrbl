@@ -35,7 +35,7 @@ TODO: implement these contracts in the library
 
 @defproc[(make-table [tablename (or/c symbol? string?)]
                      [cols (listof pair?)])
-         (string?)]{
+          string?]{
 Returns a string that can be used as a SQLite query that creates a new table in an existing database.
 The name of the new table must be specified either as a symbol or as a string.
 The columns of the new table must be given as a list of pairs, where the first element of the pair is
@@ -63,7 +63,7 @@ the name of the column and the second element of the pair must be a valid SQLite
 
 @defproc[(insert-col [tablename (or/c symbol? string?)]
                      [new-cols  (listof? pair?)])
-         (listof (string?))]{
+         (listof string?)]{
  Returns a list of string, and each string in the list can be used as a SQLite query that creates
  new columns for an existing table.
  
@@ -87,7 +87,7 @@ the name of the column and the second element of the pair must be a valid SQLite
 
 @defproc[(insert-row [tablename (or/c symbol? string?)]
                      [values (listof? pair?)])
-         (string?)]{
+          string?]{
 Returns a string that can be used as a SQLite query to insert a new row in an existing table.
 
 To insert data into an existing row, use @tt{insert-row} as in the next example.
@@ -107,7 +107,7 @@ To insert data into an existing row, use @tt{insert-row} as in the next example.
 @defproc[(update-row [tablename (or/c symbol? string?)]
                      [where (listof? pair?)]
                      [values (listof? pair?)])
-         (string?)]{
+          string?]{
 Returns a string that can be used as a SQLite query to update a row in an existing table.
 @tt{where} is a list of @tt{(column-name . value)} pairs that is used to identify a row in
 @tt{tablename} that we want to update.
