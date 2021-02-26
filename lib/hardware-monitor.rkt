@@ -1,43 +1,28 @@
 #lang racket/base                                                     
 
-(require racket/port
+(require racket/contract
+         racket/port
          racket/string)
 
-
-(define (get-free-mem)
-  (let*-values
-    ([(p stdout stdin stderr)
-      (subprocess #f #f #f "/usr/bin/free" "-m")]
-     [(res) (port->string stdout)])
-  (close-input-port stdout)
-  (close-output-port stdin)
-  (close-input-port stderr)
-  (subprocess-wait p)
-  res))
+(provide start-log)
 
 
-(define (get-vmstat)
-  (let*-values
-    ([(p stdout stdin stderr)
-      (subprocess #f #f #f "/usr/bin/vmstat")]
-     [(res) (port->string stdout)])
-  (close-input-port stdout)
-  (close-output-port stdin)
-  (close-input-port stderr)
-  (subprocess-wait p)
-  res))
+(define (call-shell-command cmd . args)
+  (lambda ()
+    (let*-values
+      ([(cmd-full) (format "/usr/bin/~a" cmd)]
+       [(p stdout stdin stderr)
+        (apply subprocess #f #f #f cmd-full args)]
+       [(res) (port->string stdout)])
+    (close-input-port stdout)
+    (close-output-port stdin)
+    (close-input-port stderr)
+    (subprocess-wait p)
+    res)))
 
-
-(define (get-top)
-  (let*-values
-    ([(p stdout stdin stderr)
-      (subprocess #f #f #f "/usr/bin/top" "-ibn1")]
-     [(res) (port->string stdout)])
-  (close-input-port stdout)
-  (close-output-port stdin)
-  (close-input-port stderr)
-  (subprocess-wait p)
-  res))
+(define get-free-mem (call-shell-command "free" "-m"))
+(define get-vmstat (call-shell-command "vmstat"))
+(define get-top (call-shell-command "top" "-ibn1"))
 
 
 (define (parse-free-mem s)
@@ -65,16 +50,26 @@
     (cons user sys)))
 
 
-(with-output-to-file "resources.log"
-     #:mode 'text
-     #:exists 'replace
-     (lambda ()
-       (for ((_ (in-naturals)))
-         (let* ((mem (parse-free-mem (get-free-mem)))
-                ;(cpu (parse-vmstat (get-vmstat)))
-                (cpu (parse-top (get-top)))
-                (usr (car cpu))
-                (sys (cdr cpu)))
-           (printf "~a ~a ~a\n" usr sys mem)
-           (sleep 0.1)))))
+(define/contract (start-log [fname "resources.log"]
+                   #:time-step [time-step 0.5]
+                   #:mode [mode 'text]
+                   #:exists [exists 'replace])
+  (->* ()
+       (string?
+        #:time-step positive?
+        #:mode (or/c 'binary 'text)
+        #:exists (or/c 'error 'append 'update 'replace 'truncate 'truncate/replace))
+       any)
+  (with-output-to-file fname
+       #:mode mode
+       #:exists exists
+       (lambda ()
+         (for ((_ (in-naturals)))
+           (let* ((mem (parse-free-mem (get-free-mem)))
+                  ;(cpu (parse-vmstat (get-vmstat)))
+                  (cpu (parse-top (get-top)))
+                  (usr (car cpu))
+                  (sys (cdr cpu)))
+             (printf "~a ~a ~a\n" usr sys mem)
+             (sleep time-step))))))
 
