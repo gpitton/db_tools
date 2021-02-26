@@ -1,14 +1,18 @@
-#lang racket
+#lang racket/base
 
 
-(provide (contract-out
-          (read-keyvalue-file (->* (string?)
-                                   (#:mode (or/c 'binary 'text)
-                                    #:keys (or/c 'all list?))
-                                   (listof hash?)))))
+(require racket/contract
+         racket/stream
+         racket/string)
+
+(provide read-keyvalue-file)
 
 
-(define (read-keyvalue-file filename #:mode [mode 'text] #:keys [keys 'all])
+(define/contract (read-keyvalue-file filename #:mode [mode 'text] #:keys [keys 'all])
+  (->* (string?)
+       (#:mode (or/c 'binary 'text)
+        #:keys (or/c 'all list?))
+       (listof hash?))
   ;; A keyvalue file is a text file with one record per line
   ;; e.g.: "Item: bolts\nQuantity: 500\nType: M14\n".
   ;; Returns a stream of hashes, where each hash contains the key-value
