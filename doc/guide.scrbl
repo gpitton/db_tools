@@ -5,4 +5,5 @@
 
 @include-section["keyvalue-parser.scrbl"]
 @include-section["sqlite-query-maker.scrbl"]
+@include-section["hardware-monitor.scrbl"]
 

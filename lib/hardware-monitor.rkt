@@ -20,6 +20,7 @@
     (subprocess-wait p)
     res)))
 
+
 (define get-free-mem (call-shell-command "free" "-m"))
 (define get-vmstat (call-shell-command "vmstat"))
 (define get-top (call-shell-command "top" "-ibn1"))
