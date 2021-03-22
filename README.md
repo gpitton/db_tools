@@ -15,5 +15,5 @@ Optionally, it would be nice to have some basic data analysis functions e.g. to 
 It would also be nice to have a tool to generate some python code that plots some specified data in one of the few formats I typically use (histograms, scatter plots, ...).
 
 
-For more information, read the documentation available as scribble file inside this repository.
+For more information, read the documentation available in scribble format inside this repository.
 
